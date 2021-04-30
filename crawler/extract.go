@@ -1,14 +1,15 @@
 package crawler
 
 import (
+	"io"
 	"strings"
 
 	"golang.org/x/net/html"
 )
 
-func Extract(baseUrl string, body string) ([]string, error) {
+func Extract(baseUrl string, body io.Reader) ([]string, error) {
 	urls := make([]string, 0, 4)
-	doc, err := html.Parse(strings.NewReader(body))
+	doc, err := html.Parse(body)
 	if err != nil {
 		return urls, err
 	}
@@ -31,8 +32,11 @@ func Extract(baseUrl string, body string) ([]string, error) {
 }
 
 func formatUrl(baseUrl string, url string) string {
+	if !strings.HasSuffix(url, "/") {
+		url = url + "/"
+	}
 	if strings.HasPrefix(url, "/") {
-		return strings.TrimSuffix(baseUrl, "/") + url
+		url = strings.TrimSuffix(baseUrl, "/") + url
 	}
 	return url
 }

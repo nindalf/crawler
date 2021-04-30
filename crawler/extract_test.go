@@ -1,24 +1,22 @@
 package crawler
 
 import (
-	"fmt"
+	"strings"
 	"testing"
 )
 
 func TestExtract(t *testing.T) {
-	urls, err := Extract("https://blog.nindalf.com/", nindalfDotCom)
+	urls, err := Extract("https://blog.nindalf.com/", strings.NewReader(nindalfDotCom))
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(urls)
 	if len(urls) != 42 {
 		t.Fatalf("Expected 42 urls in blog.nindalf.com, found - %d", len(urls))
 	}
-	urls, err = Extract("example.com", exampleDotCom)
+	urls, err = Extract("example.com", strings.NewReader(exampleDotCom))
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(urls)
 	if len(urls) != 1 {
 		t.Fatalf("Expected 1 urls in example.com, found - %d", len(urls))
 	}

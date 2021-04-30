@@ -2,7 +2,6 @@ package crawler
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"sync"
@@ -46,9 +45,5 @@ func (w *Worker) visit(url string) ([]string, error) {
 		log.Fatalln(err)
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	return Extract(w.baseUrl, string(body))
+	return Extract(w.baseUrl, resp.Body)
 }
