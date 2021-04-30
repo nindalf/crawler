@@ -6,20 +6,35 @@ import (
 )
 
 func TestExtract(t *testing.T) {
-	nindalfIndex, _ := os.Open("./example-websites/blog.nindalf.com/index.html")
-	urls, err := Extract("https://blog.nindalf.com/", nindalfIndex)
-	if err != nil {
-		t.Fatal(err)
+	testcases := []struct {
+		string
+		int
+	}{
+		{"./example-websites/blog.nindalf.com/index.html", 42},
+		{"./example-websites/example.com/index.html", 1},
 	}
-	if len(urls) != 42 {
-		t.Fatalf("Expected 42 urls in blog.nindalf.com, found - %d", len(urls))
+	for _, testcase := range testcases {
+
+		index_html, err := os.Open(testcase.string)
+		if err != nil {
+			t.Fatalf("Error opening %s - %v\n", testcase.string, err)
+		}
+
+		urls, err := Extract(index_html)
+		if err != nil {
+			t.Fatalf("Error extracting URLs from %s - %v\n", testcase.string, err)
+		}
+		if len(urls) != testcase.int {
+			t.Fatalf("Expected %d urls in blog.nindalf.com, found - %d", testcase.int, len(urls))
+		}
 	}
-	exampleIndex, _ := os.Open("./example-websites/example.com/index.html")
-	urls, err = Extract("example.com", exampleIndex)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(urls) != 1 {
-		t.Fatalf("Expected 1 urls in example.com, found - %d", len(urls))
-	}
+
+	// exampleIndex, _ := os.Open("./example-websites/example.com/index.html")
+	// urls, err = Extract(exampleIndex)
+	// if err != nil {
+	// 	t.Fatal(err)
+	// }
+	// if len(urls) != 1 {
+	// 	t.Fatalf("Expected 1 urls in example.com, found - %d", len(urls))
+	// }
 }

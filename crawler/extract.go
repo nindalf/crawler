@@ -2,12 +2,11 @@ package crawler
 
 import (
 	"io"
-	"strings"
 
 	"golang.org/x/net/html"
 )
 
-func Extract(baseUrl string, body io.Reader) ([]string, error) {
+func Extract(body io.Reader) ([]string, error) {
 	urls := make([]string, 0, 4)
 	doc, err := html.Parse(body)
 	if err != nil {
@@ -18,7 +17,7 @@ func Extract(baseUrl string, body io.Reader) ([]string, error) {
 		if n.Type == html.ElementNode && n.Data == "a" {
 			for _, a := range n.Attr {
 				if a.Key == "href" {
-					urls = append(urls, formatUrl(baseUrl, a.Val))
+					urls = append(urls, a.Val)
 					break
 				}
 			}
@@ -29,14 +28,4 @@ func Extract(baseUrl string, body io.Reader) ([]string, error) {
 	}
 	f(doc)
 	return urls, nil
-}
-
-func formatUrl(baseUrl string, url string) string {
-	if !strings.HasSuffix(url, "/") {
-		url = url + "/"
-	}
-	if strings.HasPrefix(url, "/") {
-		url = strings.TrimSuffix(baseUrl, "/") + url
-	}
-	return url
 }

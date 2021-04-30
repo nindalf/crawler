@@ -11,12 +11,11 @@ import (
 )
 
 type Worker struct {
-	baseUrl string
-	client  *retryablehttp.Client
-	wg      *sync.WaitGroup
+	client *retryablehttp.Client
+	wg     *sync.WaitGroup
 }
 
-func NewWorker(baseUrl string, wg *sync.WaitGroup) *Worker {
+func NewWorker(wg *sync.WaitGroup) *Worker {
 	client := retryablehttp.NewClient()
 	client.RetryMax = 3
 	client.HTTPClient.Timeout = 10 * time.Second
@@ -24,7 +23,7 @@ func NewWorker(baseUrl string, wg *sync.WaitGroup) *Worker {
 		MaxIdleConnsPerHost: 20,
 	}
 	client.HTTPClient.Transport = &tr
-	return &Worker{baseUrl, client, wg}
+	return &Worker{client, wg}
 }
 
 func (w *Worker) Start(urlsToCrawl <-chan string, results chan<- string) {
@@ -45,7 +44,7 @@ func (w *Worker) visit(url string) []string {
 		log.Fatalf("Non-retriable error while visiting URL - %v\n", err)
 	}
 	defer resp.Body.Close()
-	urls, err := Extract(w.baseUrl, resp.Body)
+	urls, err := Extract(resp.Body)
 	if err != nil {
 		log.Printf("Failed to parse HTML on url %s. Continuing...\n", url)
 	}
