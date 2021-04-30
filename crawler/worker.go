@@ -24,7 +24,7 @@ func NewWorker(baseUrl string, wg *sync.WaitGroup) *Worker {
 		MaxIdleConnsPerHost: 20,
 	}
 	client.HTTPClient.Transport = &tr
-	return &Worker{baseUrl: baseUrl, client: client, wg: wg}
+	return &Worker{baseUrl, client, wg}
 }
 
 func (w *Worker) Start(urlsToCrawl <-chan string, results chan<- string) {
@@ -47,7 +47,7 @@ func (w *Worker) visit(url string) []string {
 	defer resp.Body.Close()
 	urls, err := Extract(w.baseUrl, resp.Body)
 	if err != nil {
-		log.Printf("Failed to parse HTML on url %s. Continuing...", url)
+		log.Printf("Failed to parse HTML on url %s. Continuing...\n", url)
 	}
 	return urls
 }

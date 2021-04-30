@@ -1,13 +1,15 @@
 package crawler
 
 import (
+	"net/http"
 	"net/url"
 	"sync"
 	"testing"
 )
 
 func TestWorker(t *testing.T) {
-	startingUrl := "https://example.com"
+	go http.ListenAndServe(":8000", http.FileServer(http.Dir("./example-websites/example.com")))
+	startingUrl := "http://localhost:8000/"
 	url, _ := url.Parse(startingUrl)
 
 	urlsToCrawl := make(chan string, 100)
