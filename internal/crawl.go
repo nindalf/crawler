@@ -48,7 +48,7 @@ func (c Crawler) Crawl() {
 	for {
 		result, err := c.resultsQueue.ReadWithTimeout(time.Second)
 		if err != nil {
-			if err != queue.ERROR_TIMEOUT {
+			if err != queue.ErrTimeout {
 				log.Fatalf("Unexpected error - %v\nTerminating ...", err)
 			}
 			if c.resultsQueue.Empty() && c.workQueue.Empty() && c.activeWorkers == 0 {

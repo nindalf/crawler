@@ -24,7 +24,7 @@ func (q channelQueue) ReadWithTimeout(timeout time.Duration) (string, error) {
 	case val := <-q.ch:
 		return val, nil
 	case <-time.After(timeout):
-		return "", ERROR_TIMEOUT
+		return "", ErrTimeout
 	}
 }
 
