@@ -2,29 +2,20 @@ package crawler
 
 import (
 	"net/http"
-	"sync"
 	"testing"
 )
 
 func TestWorker(t *testing.T) {
-	go http.ListenAndServe(":8000", http.FileServer(http.Dir("./example-websites/example.com")))
-	startingUrl := "http://localhost:8000/"
+	go http.ListenAndServe(":8001", http.FileServer(http.Dir("./example-websites/example.com")))
+	startingUrl := "http://localhost:8001/"
 
 	urlsToCrawl := make(chan string, 100)
 	results := make(chan string, 100)
 	urlsToCrawl <- startingUrl
-	var wg sync.WaitGroup
+	var activeWorkers int64
 	for i := 0; i < NUM_WORKERS; i++ {
-		wg.Add(1)
-		worker := NewWorker(&wg)
-		go worker.Start(urlsToCrawl, results)
-	}
-
-	close(urlsToCrawl)
-	wg.Wait()
-
-	if len(results) != 1 {
-		t.Fatalf("Expected 1 result but got %d", len(results))
+		worker := NewWorker(&activeWorkers, urlsToCrawl, results)
+		go worker.Start()
 	}
 
 	expected := "https://www.iana.org/domains/example"
@@ -33,4 +24,7 @@ func TestWorker(t *testing.T) {
 		t.Fatalf("Expected %s but got %s", expected, result)
 	}
 
+	if len(urlsToCrawl) != 0 || len(results) != 0 || activeWorkers != 0 {
+		t.Fatalf("Nonzero activity")
+	}
 }

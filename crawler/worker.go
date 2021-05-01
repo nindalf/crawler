@@ -1,21 +1,22 @@
 package crawler
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
 )
 
 type Worker struct {
-	client *retryablehttp.Client
-	wg     *sync.WaitGroup
+	client        *retryablehttp.Client
+	activeCounter *int64
+	urlsToCrawl   <-chan string
+	results       chan<- string
 }
 
-func NewWorker(wg *sync.WaitGroup) *Worker {
+func NewWorker(activeCounter *int64, urlsToCrawl <-chan string, results chan<- string) *Worker {
 	client := retryablehttp.NewClient()
 	client.RetryMax = 3
 	client.HTTPClient.Timeout = 10 * time.Second
@@ -23,23 +24,23 @@ func NewWorker(wg *sync.WaitGroup) *Worker {
 		MaxIdleConnsPerHost: 20,
 	}
 	client.HTTPClient.Transport = &tr
-	return &Worker{client, wg}
+	client.Logger = nil
+	return &Worker{client, activeCounter, urlsToCrawl, results}
 }
 
-func (w *Worker) Start(urlsToCrawl <-chan string, results chan<- string) {
-	for url := range urlsToCrawl {
+func (w *Worker) Start() {
+	for url := range w.urlsToCrawl {
 		extractedUrls := w.visit(url)
 		for _, extractedUrl := range extractedUrls {
-			// handle closed channel
-			results <- extractedUrl
+			w.results <- extractedUrl
 		}
 	}
-	w.wg.Done()
 }
 
 func (w *Worker) visit(url string) []string {
-	fmt.Printf("Visiting url %s\n", url)
+	atomic.AddInt64(w.activeCounter, 1)
 	resp, err := w.client.Get(url)
+	atomic.AddInt64(w.activeCounter, -1)
 	if err != nil {
 		log.Fatalf("Non-retriable error while visiting URL - %v\n", err)
 	}
