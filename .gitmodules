@@ -1,3 +1,3 @@
-[submodule "crawler/example-websites"]
-	path = crawler/example-websites
+[submodule "internal/example-websites"]
+	path = internal/example-websites
 	url = git@github.com:nindalf/example-websites.git
