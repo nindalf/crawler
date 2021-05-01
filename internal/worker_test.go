@@ -9,11 +9,11 @@ import (
 
 func TestWorker(t *testing.T) {
 	go http.ListenAndServe(":8001", http.FileServer(http.Dir("./example-websites/example.com")))
-	startingUrl := "http://localhost:8001/"
+	startingURL := "http://localhost:8001/"
 
 	workQueue := queue.NewChannelQueue(100)
 	resultsQueue := queue.NewChannelQueue(100)
-	workQueue.Write(startingUrl)
+	workQueue.Write(startingURL)
 	var activeWorkers int64
 	for i := 0; i < 4; i++ {
 		worker := NewWorker(&activeWorkers, workQueue, resultsQueue)

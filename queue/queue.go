@@ -7,7 +7,7 @@ import (
 
 // TODO all operations should be fallible
 
-var ERROR_TIMEOUT = errors.New("timeout")
+var ErrTimeout = errors.New("timeout")
 
 type Queue interface {
 	Empty() bool

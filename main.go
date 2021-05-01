@@ -25,6 +25,6 @@ func main() {
 		log.Fatalf("Error creating crawler - %v\n", err)
 	}
 	crawler.Crawl()
-	urls := crawler.ListUrls()
+	urls := storage.List()
 	log.Printf("Found %d urls\n%v\n", len(urls), urls)
 }

@@ -15,12 +15,12 @@ func TestExtract(t *testing.T) {
 	}
 	for _, testcase := range testcases {
 
-		index_html, err := os.Open(testcase.string)
+		indexHTML, err := os.Open(testcase.string)
 		if err != nil {
 			t.Fatalf("Error opening %s - %v\n", testcase.string, err)
 		}
 
-		urls, err := Extract(index_html)
+		urls, err := Extract(indexHTML)
 		if err != nil {
 			t.Fatalf("Error extracting URLs from %s - %v\n", testcase.string, err)
 		}

@@ -12,8 +12,8 @@ import (
 
 type Crawler struct {
 	store         storage.Storage
-	startingUrl   string
-	baseUrl       string
+	startingURL   string
+	baseURL       string
 	host          string
 	workQueue     queue.Queue
 	resultsQueue  queue.Queue
@@ -21,28 +21,24 @@ type Crawler struct {
 	activeWorkers int64
 }
 
-func NewCrawler(store storage.Storage, workQueue queue.Queue, resultsQueue queue.Queue, startingUrl string, numWorkers int64) (Crawler, error) {
-	urlParts, err := url.Parse(startingUrl)
+func NewCrawler(store storage.Storage, workQueue queue.Queue, resultsQueue queue.Queue, startingURL string, numWorkers int64) (Crawler, error) {
+	urlParts, err := url.Parse(startingURL)
 	if err != nil {
 		return Crawler{}, err
 	}
-	startingUrl = urlParts.String()
-	baseUrl := urlParts.Scheme + "://" + urlParts.Host
+	startingURL = urlParts.String()
+	baseURL := urlParts.Scheme + "://" + urlParts.Host
 	host := urlParts.Host
 
 	var activeWorkers int64
 
-	return Crawler{store, startingUrl, baseUrl, host, workQueue, resultsQueue, numWorkers, activeWorkers}, nil
-}
-
-func (c Crawler) ListUrls() []string {
-	return c.store.List()
+	return Crawler{store, startingURL, baseURL, host, workQueue, resultsQueue, numWorkers, activeWorkers}, nil
 }
 
 func (c Crawler) Crawl() {
 	log.Println("Crawl starting")
-	c.workQueue.Write(c.startingUrl)
-	c.store.Add(c.startingUrl)
+	c.workQueue.Write(c.startingURL)
+	c.store.Add(c.startingURL)
 
 	for i := 0; i < int(c.numWorkers); i++ {
 		worker := NewWorker(&c.activeWorkers, c.workQueue, c.resultsQueue)
@@ -61,30 +57,30 @@ func (c Crawler) Crawl() {
 			}
 			continue
 		}
-		result = c.normalizeUrl(result)
-		resultUrl, err := url.Parse(result)
+		result = c.normalizeURL(result)
+		resultURL, err := url.Parse(result)
 		if err != nil {
 			// Invalid URL
 			continue
 		}
 
-		result = resultUrl.String()
+		result = resultURL.String()
 		if c.store.Contains(result) {
 			// we've already visited this URL.
 			continue
 		}
 
 		c.store.Add(result)
-		if resultUrl.Host == c.host {
+		if resultURL.Host == c.host {
 			// it's on the same Domain, visit it
 			c.workQueue.Write(result)
 		}
 	}
 }
 
-func (c Crawler) normalizeUrl(url string) string {
+func (c Crawler) normalizeURL(url string) string {
 	if strings.HasPrefix(url, "/") {
-		url = c.baseUrl + url
+		url = c.baseURL + url
 	}
 	return url
 }

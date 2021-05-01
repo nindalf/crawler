@@ -28,4 +28,4 @@ Usage of ./crawler:
 
 ## Note on implementation
 
-This runs on one node, using in-memory queues and storage. If it needs to run on multiple nodes, it can be extended. Implement the `Queue` and `Storage` interfaces with RabbitMQ/Postgres/Redis and use these backends in main.go.
+This runs on one node, using in-memory queues and storage. If it needs to run on multiple nodes, it can be extended. Implement the `Queue` and `Storage` interfaces with RabbitMQ/Postgres/Redis and use these backends in main.go. `Queue` needs to be implemented in a thread-safe way but `Storage` does not.
