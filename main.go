@@ -4,7 +4,7 @@ import (
 	"flag"
 	"log"
 
-	"github.com/nindalf/crawler/crawler"
+	"github.com/nindalf/crawler/internal"
 	"github.com/nindalf/crawler/storage"
 )
 
@@ -14,8 +14,10 @@ var (
 )
 
 func main() {
+	flag.Parse()
+
 	storage := storage.NewMapStorage()
-	crawler, err := crawler.NewCrawler(storage, *url, *workers)
+	crawler, err := internal.NewCrawler(storage, *url, *workers)
 	if err != nil {
 		log.Fatalf("Error creating crawler - %v\n", err)
 	}
