@@ -28,13 +28,4 @@ func TestExtract(t *testing.T) {
 			t.Fatalf("Expected %d urls in blog.nindalf.com, found - %d", testcase.int, len(urls))
 		}
 	}
-
-	// exampleIndex, _ := os.Open("./example-websites/example.com/index.html")
-	// urls, err = Extract(exampleIndex)
-	// if err != nil {
-	// 	t.Fatal(err)
-	// }
-	// if len(urls) != 1 {
-	// 	t.Fatalf("Expected 1 urls in example.com, found - %d", len(urls))
-	// }
 }
