@@ -17,10 +17,11 @@ type Crawler struct {
 	host          string
 	urlsToCrawl   chan string
 	results       chan string
+	numWorkers    int64
 	activeWorkers int64
 }
 
-func NewCrawler(store storage.Storage, startingUrl string) (Crawler, error) {
+func NewCrawler(store storage.Storage, startingUrl string, numWorkers int64) (Crawler, error) {
 	urlParts, err := url.Parse(startingUrl)
 	if err != nil {
 		return Crawler{}, err
@@ -33,7 +34,7 @@ func NewCrawler(store storage.Storage, startingUrl string) (Crawler, error) {
 	results := make(chan string, 100)
 	var activeWorkers int64
 
-	return Crawler{store, startingUrl, baseUrl, host, urlsToCrawl, results, activeWorkers}, nil
+	return Crawler{store, startingUrl, baseUrl, host, urlsToCrawl, results, numWorkers, activeWorkers}, nil
 }
 
 func (c Crawler) ListUrls() []string {
