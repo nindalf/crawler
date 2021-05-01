@@ -1,5 +1,9 @@
 # Crawler
 
+![Build passing](https://github.com/nindalf/crawler/actions/workflows/go.yml/badge.svg) [![Go Report Card](https://goreportcard.com/badge/github.com/nindalf/crawler)](https://goreportcard.com/report/github.com/nindalf/crawler) 
+[![GitHub go.mod Go version of a Go module](https://img.shields.io/github/go-mod/go-version/nindalf/crawler.svg)](https://github.com/nindalf/crawler)
+
+
 ## Problem statement
 
 > Given a starting URL, the crawler should visit each URL it finds on the same domain. It should print each URL visited, and a list of links found on that page. The crawler should be limited to one subdomain - so when you start with *https://example.com/*, it would crawl all pages on the example.com website, but not follow external links, for example to google.com or github.com.
