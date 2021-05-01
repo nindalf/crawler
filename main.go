@@ -26,5 +26,5 @@ func main() {
 	}
 	crawler.Crawl()
 	urls := crawler.ListUrls()
-	log.Println(urls)
+	log.Printf("Found %d urls\n%v\n", len(urls), urls)
 }

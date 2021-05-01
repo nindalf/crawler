@@ -40,6 +40,7 @@ func (c Crawler) ListUrls() []string {
 }
 
 func (c Crawler) Crawl() {
+	log.Println("Crawl starting")
 	c.workQueue.Write(c.startingUrl)
 	c.store.Add(c.startingUrl)
 
