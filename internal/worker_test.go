@@ -13,7 +13,7 @@ func TestWorker(t *testing.T) {
 	results := make(chan string, 100)
 	urlsToCrawl <- startingUrl
 	var activeWorkers int64
-	for i := 0; i < NUM_WORKERS; i++ {
+	for i := 0; i < 4; i++ {
 		worker := NewWorker(&activeWorkers, urlsToCrawl, results)
 		go worker.Start()
 	}

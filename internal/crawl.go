@@ -8,8 +8,6 @@ import (
 	"github.com/nindalf/crawler/storage"
 )
 
-const NUM_WORKERS = 4
-
 type Crawler struct {
 	store         storage.Storage
 	startingUrl   string
@@ -46,7 +44,7 @@ func (c Crawler) Crawl() {
 	c.urlsToCrawl <- c.startingUrl
 	c.store.Add(c.startingUrl)
 
-	for i := 0; i < NUM_WORKERS; i++ {
+	for i := 0; i < int(c.numWorkers); i++ {
 		worker := NewWorker(&c.activeWorkers, c.urlsToCrawl, c.results)
 		go worker.Start()
 	}

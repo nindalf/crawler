@@ -7,13 +7,13 @@ import (
 	"github.com/nindalf/crawler/storage"
 )
 
-const numWorkers = 4
+const NUM_WORKERS = 4
 
 func TestCrawl(t *testing.T) {
 	go http.ListenAndServe(":8000", http.FileServer(http.Dir("./example-websites/blog.nindalf.com")))
 	storage := storage.NewMapStorage()
 	startingUrl := "http://localhost:8000/"
-	crawler, err := NewCrawler(storage, startingUrl, numWorkers)
+	crawler, err := NewCrawler(storage, startingUrl, NUM_WORKERS)
 	if err != nil {
 		t.Fatalf("Error creating crawler - %v\n", err)
 	}
