@@ -7,16 +7,18 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
+	"github.com/nindalf/crawler/queue"
 )
 
 type Worker struct {
 	client        *retryablehttp.Client
 	activeCounter *int64
-	urlsToCrawl   <-chan string
-	results       chan<- string
+
+	workQueue    queue.ReadQueue
+	resultsQueue queue.WriteQueue
 }
 
-func NewWorker(activeCounter *int64, urlsToCrawl <-chan string, results chan<- string) *Worker {
+func NewWorker(activeCounter *int64, workQueue queue.ReadQueue, resultsQueue queue.WriteQueue) *Worker {
 	client := retryablehttp.NewClient()
 	client.RetryMax = 3
 	client.HTTPClient.Timeout = 10 * time.Second
@@ -25,15 +27,14 @@ func NewWorker(activeCounter *int64, urlsToCrawl <-chan string, results chan<- s
 	}
 	client.HTTPClient.Transport = &tr
 	client.Logger = nil
-	return &Worker{client, activeCounter, urlsToCrawl, results}
+	return &Worker{client, activeCounter, workQueue, resultsQueue}
 }
 
 func (w *Worker) Start() {
-	for url := range w.urlsToCrawl {
+	for {
+		url := w.workQueue.BlockingRead()
 		extractedUrls := w.visit(url)
-		for _, extractedUrl := range extractedUrls {
-			w.results <- extractedUrl
-		}
+		w.resultsQueue.WriteMany(extractedUrls)
 	}
 }
 
