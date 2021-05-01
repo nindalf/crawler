@@ -25,3 +25,7 @@ Usage of ./crawler:
 2021/05/01 10:16:12 Found 207 urls
 [https://pages.cloudflare.com https://store.steampowered.com/app/427520/Factorio/ ...
 ```
+
+## Note on implementation
+
+This runs on one node, using in-memory queues and storage. If it needs to run on multiple nodes, it can be extended. Implement the `Queue` and `Storage` interfaces with RabbitMQ/Postgres/Redis and use these backends in main.go.
