@@ -1,24 +1,24 @@
 package storage
 
-type MapStorage struct {
+type mapStorage struct {
 	m map[string]bool
 }
 
 func NewMapStorage() Storage {
 	m := make(map[string]bool)
-	return MapStorage{m}
+	return mapStorage{m}
 }
 
-func (ms MapStorage) Contains(s string) bool {
+func (ms mapStorage) Contains(s string) bool {
 	_, ok := ms.m[s]
 	return ok
 }
 
-func (ms MapStorage) Add(s string) {
+func (ms mapStorage) Add(s string) {
 	ms.m[s] = true
 }
 
-func (ms MapStorage) List() []string {
+func (ms mapStorage) List() []string {
 	result := make([]string, 0, len(ms.m))
 	for s := range ms.m {
 		result = append(result, s)
