@@ -15,3 +15,13 @@ Usage of ./crawler:
   -w int
     	The number of workers to run simultaneously (default 4)
 ```
+
+## Example
+
+```
+➜ ./crawler -u https://blog.nindalf.com -w 25
+2021/05/01 10:16:10 Crawl starting
+2021/05/01 10:16:12 Crawl complete
+2021/05/01 10:16:12 Found 207 urls
+[https://pages.cloudflare.com https://store.steampowered.com/app/427520/Factorio/ ...
+```
