@@ -45,17 +45,15 @@ func (c Crawler) Crawl() {
 		go worker.Start()
 	}
 
-	for {
+	// Keep looping while the queues are non-empty or workers are active
+	for !c.resultsQueue.Empty() || !c.workQueue.Empty() ! c.activeWorkers > 0 {
 		result, err := c.resultsQueue.ReadWithTimeout(time.Second)
 		if err != nil {
-			if err != queue.ErrTimeout {
-				log.Fatalf("Unexpected error - %v\nTerminating ...", err)
+			if err == queue.ErrTimeout {
+				// results queue might be temporarily empty
+				continue
 			}
-			if c.resultsQueue.Empty() && c.workQueue.Empty() && c.activeWorkers == 0 {
-				log.Println("Crawl complete")
-				break
-			}
-			continue
+			log.Fatalf("Unexpected error - %v\nTerminating ...", err)
 		}
 		result = c.normalizeURL(result)
 		resultURL, err := url.Parse(result)
@@ -76,6 +74,8 @@ func (c Crawler) Crawl() {
 			c.workQueue.Write(result)
 		}
 	}
+	
+	log.Println("Crawl complete")
 }
 
 func (c Crawler) normalizeURL(url string) string {
