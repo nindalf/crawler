@@ -46,7 +46,7 @@ func (c Crawler) Crawl() {
 	}
 
 	// Keep looping while the queues are non-empty or workers are active
-	for !c.resultsQueue.Empty() || !c.workQueue.Empty() ! c.activeWorkers > 0 {
+	for !c.resultsQueue.Empty() || !c.workQueue.Empty() || c.activeWorkers > 0 {
 		result, err := c.resultsQueue.ReadWithTimeout(time.Second)
 		if err != nil {
 			if err == queue.ErrTimeout {
