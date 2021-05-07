@@ -1,6 +1,8 @@
 package internal
 
 import (
+	"fmt"
+	"net"
 	"net/http"
 	"testing"
 
@@ -11,11 +13,10 @@ import (
 const NumWorkers = 4
 
 func TestCrawl(t *testing.T) {
-	go http.ListenAndServe(":8000", http.FileServer(http.Dir("./example-websites/blog.nindalf.com")))
 	storage := storage.NewMapStorage()
 	workQueue := queue.NewChannelQueue(100)
 	resultsQueue := queue.NewChannelQueue(100)
-	startingURL := "http://localhost:8000/"
+	startingURL := serveDirectory(t, "./example-websites/blog.nindalf.com")
 	crawler, err := NewCrawler(storage, workQueue, resultsQueue, startingURL, NumWorkers)
 	if err != nil {
 		t.Fatalf("Error creating crawler - %v\n", err)
@@ -25,4 +26,16 @@ func TestCrawl(t *testing.T) {
 	if len(urls) != 205 {
 		t.Fatalf("Expected 205 URLs, found %d - ", len(urls))
 	}
+}
+
+func serveDirectory(t *testing.T, directory string) string {
+	// Listen on a randomly assigned port
+	conn, err := net.Listen("tcp", "localhost:0")
+	if err != nil {
+		t.Fatalf("Failed to serve test directory - %v\n", err)
+	}
+	go func() {
+		http.Serve(conn, http.FileServer(http.Dir(directory)))
+	}()
+	return fmt.Sprintf("http://%s/", conn.Addr().String())
 }

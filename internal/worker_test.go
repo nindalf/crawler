@@ -1,15 +1,13 @@
 package internal
 
 import (
-	"net/http"
 	"testing"
 
 	"github.com/nindalf/crawler/queue"
 )
 
 func TestWorker(t *testing.T) {
-	go http.ListenAndServe(":8001", http.FileServer(http.Dir("./example-websites/example.com")))
-	startingURL := "http://localhost:8001/"
+	startingURL := serveDirectory(t, "./example-websites/example.com")
 
 	workQueue := queue.NewChannelQueue(100)
 	resultsQueue := queue.NewChannelQueue(100)
